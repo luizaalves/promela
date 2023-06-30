@@ -84,6 +84,7 @@ estado_esc:
 // Perdas de sincronismo no enquadramento são recuperadas em algum momento futuro após erros cessarem
 //ltl prop1 { (perdeu==2 -> <> perdeu == 0) }
 ltl prop1 { (perdeu -> <> !perdeu)}
+//
 
 // Quadros que excedam o tamanho máximo são descartados pelo receptor
 ltl prop2 { ( rx_cnt  -> !rx_cnt) }

@@ -65,6 +65,8 @@ active proctype receptor() {
 
 // Se uma mensagem for transmitida, ela será recebida em algum momento
 ltl prop1 { (!down -> <> down)}
+//ltl prop1 { [] (! (tx!data, seq) || <> (rx!ack, eval(seq))) }
 
 //Uma nova mensagem é transmitida somente se a mensagem anterior for confirmada
 ltl prop2 { (!msg_received -> <> msg_received)}
+// ltl prop2 { [] (!((tx!data, eval(seq)) && !((tx!data, eval(seq)) U (rx!ack, eval(seq))))) }
