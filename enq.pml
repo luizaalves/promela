@@ -1,4 +1,4 @@
-int perdeu = 0;
+bool perdeu = false;
 bool rx_cnt = false;
 
 mtype = {flag, esc, data};
@@ -38,7 +38,7 @@ active proctype fram_rx() {
 estado_ocioso:
   rx_cnt = false;
   cnt = 0;
-  perdeu = 0;
+  perdeu = false;
   do
   :: tx?flag -> goto estado_rx;
   :: tx?data -> skip; // ignora 
@@ -61,7 +61,7 @@ estado_rx:
     goto estado_ocioso;
   :: tx?octeto -> 
     // perdeu sincronismo
-    perdeu = 2;
+    perdeu = true;
     skip;
   od;
 
@@ -76,13 +76,14 @@ estado_esc:
     goto estado_ocioso;
   :: tx?octeto -> 
     // perdeu sincronismo
-    perdeu = 2;
+    perdeu = true;
     skip;
   od;
 }
 
 // Perdas de sincronismo no enquadramento são recuperadas em algum momento futuro após erros cessarem
-ltl prop1 { (perdeu==2 -> <> perdeu == 0) }
+//ltl prop1 { (perdeu==2 -> <> perdeu == 0) }
+ltl prop1 { (perdeu -> <> !perdeu)}
 
 // Quadros que excedam o tamanho máximo são descartados pelo receptor
 ltl prop2 { ( rx_cnt  -> !rx_cnt) }
