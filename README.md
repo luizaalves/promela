@@ -57,5 +57,5 @@ unreached in claim prop2
         _spin_nvr.tmp:10, state 13, "-end-"
         (1 of 13 states)
 
-pan: elapsed time 0.32 seconds
-pan: rate 790893.75 states/second
+pan: elapsed time 0.28 seconds
+pan: rate 771735.71 states/second
