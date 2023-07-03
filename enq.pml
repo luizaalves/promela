@@ -1,9 +1,9 @@
 mtype = {flag, esc, data};
+bool rcv = false
 
 chan tx = [1] of {byte};
 
 int max_size = 32;
-int cnt_fram_rx;
 
 active proctype fram_tx() {
   int cnt;
@@ -30,10 +30,12 @@ inicio:
 }
 
 active proctype fram_rx() {
+  int cnt;
   mtype octeto;
 
-estado_ocioso:
-  cnt_fram_rx = 0;
+estado_ocioso:  
+  rcv = false
+  cnt = 0;
   do
   :: tx?flag -> goto estado_rx;
   :: tx?data -> skip; // ignora 
@@ -44,14 +46,16 @@ estado_ocioso:
 estado_rx: 
 
   do 
-  :: tx?data -> cnt_fram_rx++;
+  :: tx?data -> cnt++;
   :: tx?esc -> goto estado_esc;
   :: tx?flag -> 
      if
-     :: cnt_fram_rx == 0 -> skip;
-     :: else -> goto estado_ocioso;
+     :: cnt == 0 -> skip;
+     :: else -> 
+      rcv = true
+      goto estado_ocioso;
      fi;
-  :: cnt_fram_rx > max_size -> 
+  :: cnt > max_size -> 
     goto estado_ocioso;
   :: tx?octeto -> 
     // perdeu sincronismo
@@ -61,7 +65,7 @@ estado_rx:
 estado_esc:
   do
   :: tx?data -> 
-     cnt_fram_rx++;
+     cnt++;
      goto estado_rx;
   :: tx?flag -> // erro ... não deveria receber flag
     goto estado_ocioso;
@@ -73,7 +77,7 @@ estado_esc:
   od;
 }
 // Perdas de sincronismo no enquadramento são recuperadas em algum momento futuro após erros cessarem
-ltl prop1 { [](cnt_fram_rx > 0) -> <> (cnt_fram_rx == 0) }
+ltl prop1 { []<> (rcv == true)}
 
 //Quadros que excedam o tamanho máximo são descartados pelo receptor
-ltl prop2 { <>((tx==data || tx==esc) -> (cnt_fram_rx <= max_size))}
+ltl prop2 { ([](tx==data || tx==esc) && (fram_rx:cnt <= max_size))}
