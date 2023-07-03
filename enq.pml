@@ -32,9 +32,11 @@ inicio:
 active proctype fram_rx() {
   int cnt;
   mtype octeto;
+  bool cnt_rx
 
 estado_ocioso:  
   rcv = false
+  cnt_rx = false
   cnt = 0;
   do
   :: tx?flag -> goto estado_rx;
@@ -44,9 +46,14 @@ estado_ocioso:
   od;
 
 estado_rx: 
+  
 
   do 
-  :: tx?data -> cnt++;
+  :: tx?data -> 
+    if
+     :: cnt <= max_size -> cnt++;
+     :: else -> cnt_rx = true;
+    fi;
   :: tx?esc -> goto estado_esc;
   :: tx?flag -> 
      if
@@ -65,7 +72,10 @@ estado_rx:
 estado_esc:
   do
   :: tx?data -> 
-     cnt++;
+     if
+     :: cnt <= max_size -> cnt++;
+     :: else -> cnt_rx = true;
+    fi;
      goto estado_rx;
   :: tx?flag -> // erro ... não deveria receber flag
     goto estado_ocioso;
@@ -80,4 +90,4 @@ estado_esc:
 ltl prop1 { []<> (rcv == true)}
 
 //Quadros que excedam o tamanho máximo são descartados pelo receptor
-ltl prop2 { ([](tx==data || tx==esc) && (fram_rx:cnt <= max_size))}
+ltl prop2 { ([](tx==data || tx==esc) && (fram_rx:cnt_rx == false))}
