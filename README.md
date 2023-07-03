@@ -61,5 +61,58 @@ unreached in claim prop2
         _spin_nvr.tmp:24, state 18, "-end-"
         (3 of 18 states)
 
+
+#### Erro 
+
+pan: ltl formula prop1
+pan:1: acceptance cycle (at depth 402)
+pan: wrote enq.pml.trail
+
+(Spin Version 6.5.1 -- 20 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (prop1)
+        assertion violations    + (if within scope of claim)
+        acceptance   cycles     + (fairness disabled)
+        invalid end states      - (disabled by never claim)
+
+State-vector 48 byte, depth reached 1158, errors: 1
+      604 states, stored (634 visited)
+       15 states, matched
+      649 transitions (= visited+matched)
+        0 atomic steps
+hash conflicts:         0 (resolved)
+
+Stats on memory usage (in Megabytes):
+    0.044       equivalent memory usage for states (stored*(State-vector + overhead))
+    0.281       actual memory usage for states
+  128.000       memory used for hash table (-w24)
+    0.534       memory used for DFS stack (-m10000)
+  128.730       total actual memory usage
+
+
+
+pan: elapsed time 0 seconds
+
+
+##### -t
+
+ltl prop1: [] (<> ((rcv==1)))
+ltl prop2: ([] (((tx==data)) || ((tx==esc)))) && ((fram_rx:cnt_rx==0))
+Never claim moves to line 3     [(!((rcv==1)))]
+Never claim moves to line 8     [(!((rcv==1)))]
+  <<<<<START OF CYCLE>>>>>
+spin: trail ends after 1148 steps
+#processes: 2
+                rcv = 0
+                queue 1 (tx): 
+                max_size = 32
+1148:   proc  1 (fram_rx:1) enq.pml:69 (state 35)
+1148:   proc  0 (fram_tx:1) enq.pml:12 (state 1)
+1148:   proc  - (prop1:1) _spin_nvr.tmp:7 (state 10)
+2 processes created
+
 pan: elapsed time 0.28 seconds
 pan: rate 771735.71 states/second
