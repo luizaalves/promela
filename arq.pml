@@ -57,7 +57,7 @@ active proctype receptor() {
 }
 
 //    Se uma mensagem for transmitida, ela será recebida em algum momento
-//ltl rcv {[] (transmissor@send_data -> <> !(receptor@not_rcv))}
+ltl rcv {[] (transmissor@send_data -> <> !(receptor@not_rcv))}
 
 
 
