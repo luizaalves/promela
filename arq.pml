@@ -47,6 +47,7 @@ active proctype receptor() {
   :: tx?data,eval(seq) ->
      printf("receptor recebeu data %d\n", seq)
      rx!ack,seq
+     send_ack:
      recebeu:
      seq = ! seq
   :: tx?data,eval(!seq) ->
@@ -56,8 +57,9 @@ active proctype receptor() {
 }
 
 //    Se uma mensagem for transmitida, ela será recebida em algum momento
-ltl rcv {[] (transmissor@send_data -> <> !(receptor@not_rcv))}
+//ltl rcv {[] (transmissor@send_data -> <> !(receptor@not_rcv))}
 
 
 
 //    Uma nova mensagem é transmitida somente se a mensagem anterior for confirmada
+ltl tx {[] (transmissor@send_data -> <>(receptor@recebeu U transmissor@send_data))}

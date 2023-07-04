@@ -152,6 +152,57 @@ Fim do rastro (trail):
 
 - O rastro (trail) de execução termina após 5 passos.
 
+
+Segunda propriedade:
+
+> "Uma nova mensagem é transmitida somente se a mensagem anterior for confirmada"
+
+A sentença LTL definida foi:
+
+> ltl tx {[] (transmissor@send_data -> <>(receptor@recebeu U transmissor@send_data))}
+
+- transmissor@send_data: O evento "transmissor envia dados" ocorre em algum momento.
+- receptor@recebeu: O evento "receptor recebeu dados" ocorre em algum momento.
+- receptor@recebeu U transmissor@send_data: O evento "receptor recebeu dados" ocorre em algum momento até que o evento "transmissor envia dados" ocorra.
+- [] (transmissor@send_data -> <>(receptor@recebeu U transmissor@send_data)): É sempre verdade que se o evento "transmissor envia dados" ocorrer, de acordo com a *tag* aplicada, então eventualmente o evento "receptor recebeu dados" ocorrerá antes do próximo evento "transmissor envia dados".
+
+
+Após aplicar o LTL no modelo, erros são encontrados:
+
+ltl tx: [] ((! ((transmissor@send_data))) || (<> (((receptor@recebeu)) U ((transmissor@send_data)))))
+Never claim moves to line 4     [(1)]
+          transmissor transmitiu msg 0
+          retransmitiu data 0
+spin: trail ends after 16 steps
+#processes: 2
+                queue 1 (tx): 
+                send_data = 0
+                recebeu = 0
+ 16:    proc  1 (receptor:1) arq.pml:48 (state 4)
+ 16:    proc  0 (transmissor:1) arq.pml:22 (state 15)
+ 16:    proc  - (tx:1) _spin_nvr.tmp:2 (state 5)
+
+
+Neste caso, após a linha "Never claim moves to line 4     [(1)]".
+
+As linhas seguintes fornecem informações sobre o estado dos processos no sistema/modelo.
+
+- "transmissor transmitiu msg 0" indica que o processo "transmissor" transmitiu a mensagem 0.
+- "retransmitiu data 0" indica que a data 0 foi retransmitida.
+
+A linha "spin: trail ends after 16 steps" indica que a execução do modelo foi concluída após 16 passos.
+
+As linhas a seguir fornecem informações detalhadas sobre o estado dos processos no momento da conclusão da execução:
+
+- "send_data = 0" indica que o valor da variável "send_data" no processo é 0.
+- "recebeu = 0" indica que o valor da variável "recebeu" no processo é 0.
+
+As próximas três linhas fornecem informações sobre o estado atual de cada processo:
+
+- "16: proc 1 (receptor:1) arq.pml:48 (state 4)" indica que o processo 1 (receptor) está no estado 4.
+- "16: proc 0 (transmissor:1) arq.pml:22 (state 15)" indica que o processo 0 (transmissor) está no estado 15.
+- "16: proc - (tx:1) _spin_nvr.tmp:2 (state 5)" indica que o processo - (tx) está no estado 5.
+
 #### Enquadramento
 
 Primeira propriedade:
@@ -163,7 +214,7 @@ A sentença LTL definida foi:
 > ltl prop2 { [](fram_rx@tx_data  -> <>(fram_rx:cnt_rx==false)) }
 
 
-A sentença LTL diz que quando `tx_data`, uma label de monitoramento de envio de dado, é acionada, implica que **EVENTUALMENTE**"<>", a variável local `cnt_rx` é false, indica que o *buffer* não estourou. O uso desta variável de apoio se fez necessário devido a um cenário de teste que estava ocorrendo na validação do LTL. Após validar a sentença, para o caso de monitorar o contador do *buffer* diretamente no LTL, uma séria de variações de estados eram geradas no spin, de modo que foram necessárias 5 milhões de rotas para validar o modelo, pois a cada passo que a variavel contadora incrementava, uma nova combinação de modelo etra definida. Desta forma, através apenas de uma variável booleana que acompanhan o estouro do `buffe`, é possível simplificar significativamente o processo.
+A sentença LTL diz que quando `tx_data`, uma label de monitoramento de envio de dado, é acionada, implica que **EVENTUALMENTE**"<>", a variável local `cnt_rx` é false, indica que o *buffer* não estourou. O uso desta variável de apoio se fez necessário devido a um cenário de teste que estava ocorrendo na validação do LTL. Após validar a sentença, para o caso de monitorar o contador do *buffer* diretamente no LTL, uma séria de variações de estados eram geradas no spin, de modo que foram necessárias 5 milhões de rotas para validar o modelo, pois a cada passo que a variavel contadora incrementava, uma nova combinação de modelo etra definida. Desta forma, através apenas de uma variável booleana que acompanhan o estouro do `buffer`, é possível simplificar significativamente o processo.
 
 Conforme a saída abaixo:
 
